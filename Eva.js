@@ -8,15 +8,18 @@ class Eva{
         this.global = global;
     }
     eval(exp, env = this.global){
-        if (isNumber(exp)){
+        
+//----------------------------------------------------
+//Numbers and Strings
+        if (isNumber(exp)){ 
             return exp;
         }
 
         if (isString(exp)){
             return exp.slice(1, -1);
         }
-        
-        //Math operations
+//----------------------------------------------------        
+//Math operations
 
         if (exp[0] === '+'){
             return this.eval(exp[1]) + this.eval(exp[2]);
@@ -36,18 +39,28 @@ class Eva{
             }
             return this.eval(exp[1]) / this.eval(exp[2]);
         }
-        
-        //Variable definition
+//----------------------------------------------------        
+//Variable definition
         if(exp[0] === 'var'){
             const [_, name, value] = exp;
             return env.define(name, this.eval(value));
         }
 
+//Variable access
+        if (isVariableName(exp)){
+            return env.lookup(exp)
+        }
+
         throw 'Not Implemented';
     }
-
 }
 
+//----------------------------------------------------
+//Helper functions
+
+function isVariableName(exp){
+    return typeof exp === 'string' && /^[a-zA-Z][a-zA-Z0-9_]*$/.test(exp)
+}
 
 function isNumber(exp){
     return typeof exp === 'number';
@@ -72,6 +85,10 @@ assert.strictEqual(eva.eval([ '*' , 6, [ '*' , 2, 3]]), 36);
 assert.strictEqual(eva.eval ([ '/' , 10, 5]), 2);
 assert.strictEqual(eva.eval([ '/' , 30, [ '+' , 2, 3]]), 6);
 assert.strictEqual(eva.eval(['var' ,'x', 1]), 1);
+assert.strictEqual(eva.eval("x"), 1);
+assert.strictEqual(eva.eval(['var' , 'y' , 100]), 100);
+
+
 
 
 

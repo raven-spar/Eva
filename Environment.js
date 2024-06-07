@@ -14,6 +14,13 @@ class Environment{
     return value;
     }
 
+    lookup(name){
+        if(!(name in this.record)){
+            throw new ReferenceError(`Variable ${name} is not defined`)
+        }
+        return this.record[name];
+    }
+
 }
 
 module.exports = Environment;
