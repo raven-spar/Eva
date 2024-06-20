@@ -19,6 +19,11 @@ class Environment{
         return this.resolve(name).record[name];
     }
 
+    assign(name, value){
+        this.resolve(name).record[name] = value;
+        return value;
+    }
+
     resolve(name){
         if(this.record.hasOwnProperty(name)){
             return this;

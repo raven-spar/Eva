@@ -58,6 +58,12 @@ class Eva{
             return env.lookup(exp,env)
         }
 
+//Variable assignment
+        if (exp[0] === 'set'){
+            const [_, name, value] = exp;
+            return env.assign(name, this.eval(value, env));
+        }
+
         throw `Not Implemented: ${JSON.stringify(exp)}`;
     }
     _evalBlock(block, env){
@@ -140,6 +146,14 @@ assert.strictEqual(eva.eval(
             ]],'result'
         ]),
      11);  
+
+// Assignment
+assert.strictEqual(eva.eval(
+    ['begin', 
+        ['var', 'x', 1], 
+        ['set', 'x', 2], 
+        'x'
+    ]), 2);
 
 
 
