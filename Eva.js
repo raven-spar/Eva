@@ -76,17 +76,25 @@ function isString(exp){
 
 const eva  = new Eva();
 
+//Numbers and Strings
 assert.strictEqual(eva.eval(1), 1);
 assert.strictEqual(eva.eval('"Hello"'), 'Hello');
+
+//Math operations
 assert.strictEqual(eva.eval ([ '+' , 1, 5]), 6);
 assert.strictEqual(eva.eval([ '+' , 6, [ '+' , 2, 3]]), 11);
 assert.strictEqual(eva.eval([ '+' , ['+', 2, 4], [ '+' , 2, 3]]), 11);
 assert.strictEqual(eva.eval([ '*' , 6, [ '*' , 2, 3]]), 36);
 assert.strictEqual(eva.eval ([ '/' , 10, 5]), 2);
 assert.strictEqual(eva.eval([ '/' , 30, [ '+' , 2, 3]]), 6);
+
+//Variable definition
 assert.strictEqual(eva.eval(['var' ,'x', 1]), 1);
 assert.strictEqual(eva.eval("x"), 1);
 assert.strictEqual(eva.eval(['var' , 'y' , 100]), 100);
+
+//Blocks
+
 
 
 
