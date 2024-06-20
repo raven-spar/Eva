@@ -22,36 +22,54 @@ class Eva{
 //Math operations
 
         if (exp[0] === '+'){
-            return this.eval(exp[1]) + this.eval(exp[2]);
+            return this.eval(exp[1],env) + this.eval(exp[2],env);
         }
 
         if (exp[0] === '*'){
-            return this.eval(exp[1]) * this.eval(exp[2]);
+            return this.eval(exp[1],env) * this.eval(exp[2], env);
         }
         
         if (exp[0] === '-'){
-            return this.eval(exp[1]) - this.eval(exp[2]);
+            return this.eval(exp[1], env) - this.eval(exp[2], env);
         }
 
         if (exp[0] === '/'){
             if (isNumber(exp[2]) && exp[2] === 0){
                 throw 'Division by zero';
             }
-            return this.eval(exp[1]) / this.eval(exp[2]);
+            return this.eval(exp[1], env) / this.eval(exp[2], env);
+        }
+
+//----------------------------------------------------
+//Blocks
+        if (exp[0] === 'begin'){
+            const blockEnv = new Environment({}, env);
+            return this._evalBlock(exp, blockEnv);
         }
 //----------------------------------------------------        
 //Variable definition
         if(exp[0] === 'var'){
             const [_, name, value] = exp;
-            return env.define(name, this.eval(value));
+            return env.define(name, this.eval(value, env));
         }
 
 //Variable access
         if (isVariableName(exp)){
-            return env.lookup(exp)
+            return env.lookup(exp,env)
         }
 
-        throw 'Not Implemented';
+        throw `Not Implemented: ${JSON.stringify(exp)}`;
+    }
+    _evalBlock(block, env){
+        let result;
+        const [_tag, ...exps] = block;
+
+        exps.forEach(element => {
+            result = this.eval(element, env)
+            
+        });
+
+        return result;
     }
 }
 
@@ -94,9 +112,34 @@ assert.strictEqual(eva.eval("x"), 1);
 assert.strictEqual(eva.eval(['var' , 'y' , 100]), 100);
 
 //Blocks
+assert.strictEqual(eva.eval(
+    ['begin', 
+        ['var', 'x', 1], 
+        ['var', 'y', 2], 
+        ['+', 'x', 'y']
+    ]), 3);
 
-
-
+    //nested blocks
+    assert.strictEqual(eva.eval(
+        ['begin', 
+            ['var', 'x', 1], 
+            ['begin',
+                ['var', 'x', 2],
+                'x' 
+            ],'x'
+        ]),
+     1);  
+            
+    //global scope and block scope
+     assert.strictEqual(eva.eval(
+        ['begin', 
+            ['var', 'value', 1], 
+            ['var', 'result' ,['begin',
+                ['var', 'x', ['+', 'value', 10]],
+                'x' 
+            ]],'result'
+        ]),
+     11);  
 
 
 

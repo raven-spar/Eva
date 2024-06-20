@@ -3,8 +3,9 @@ const assert = require('assert');
 class Environment{
 
 //Creates an environment with given record
-    constructor(record = {}){
+    constructor(record = {}, parent = null){
     this.record = record;
+    this.parent = parent;  
     }
 
 
@@ -15,10 +16,19 @@ class Environment{
     }
 
     lookup(name){
-        if(!(name in this.record)){
-            throw new ReferenceError(`Variable ${name} is not defined`)
+        return this.resolve(name).record[name];
+    }
+
+    resolve(name){
+        if(this.record.hasOwnProperty(name)){
+            return this;
         }
-        return this.record[name];
+
+        if(this.parent === null){
+            throw new ReferenceError(`Variable ${name} is not defined`);
+        }
+
+        return this.parent.resolve(name);
     }
 
 }
